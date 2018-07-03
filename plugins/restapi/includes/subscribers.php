@@ -8,7 +8,7 @@ class Subscribers
 {
     /**
      * Get all the Subscribers in the system.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [order_by] {string} name of column to sort, default "id".<br/>
      * [order] {string} sort order asc or desc, default: asc.<br/>
@@ -37,7 +37,7 @@ class Subscribers
 
     /**
      * Get the total of Subscribers in the system.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * none
      * </p>
@@ -52,7 +52,7 @@ class Subscribers
 
     /**
      * Get one Subscriber by ID.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [*id] {integer} the ID of the Subscriber.<br/>
      * </p>
@@ -70,7 +70,7 @@ class Subscribers
 
     /**
      * Get one Subscriber by email address.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [*email] {string} the email address of the Subscriber.<br/>
      * </p>
@@ -88,7 +88,7 @@ class Subscribers
 
     /**
      * Add one Subscriber.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [*email] {string} the email address of the Subscriber.<br/>
      * [*confirmed] {integer} 1=confirmed, 0=unconfirmed.<br/>
@@ -130,7 +130,7 @@ class Subscribers
 
     /**
      * Update one Subscriber.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [*id] {integer} the ID of the Subscriber.<br/>
      * [*email] {string} the email address of the Subscriber.<br/>
@@ -168,7 +168,7 @@ class Subscribers
 
     /**
      * Delete a Subscriber.
-     * 
+     *
      * <p><strong>Parameters:</strong><br/>
      * [*id] {integer} the ID of the Subscriber.<br/>
      * </p>
@@ -189,5 +189,22 @@ class Subscribers
         } catch (PDOException $e) {
             Response::outputError($e);
         }
+    }
+
+    public static function subscriberUpdateUserAttribute()
+    {
+      $sql = 'INSERT INTO '.$GLOBALS['usertable_prefix'].'attribute (userid,attributeid,value) VALUES (:userid,:attributeid,:value) ON DUPLICATE KEY UPDATE value=:value;';
+      try {
+          $db = PDO::getConnection();
+          $stmt = $db->prepare($sql);
+          $stmt->bindParam('userid', $_REQUEST['userid']);
+          $stmt->bindParam('attributeid', $_REQUEST['attributeid']);
+          $stmt->bindParam('value', $_REQUEST['value']);
+          $stmt->execute();
+          $db = null;
+          self::SubscriberGet($userid);
+      } catch (\Exception $e) {
+          Response::outputError($e);
+      }
     }
 }
